@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import ReactDOM from "react-dom";
 import api from './services/api'
 import "./styles.css";
 
@@ -10,7 +11,7 @@ function App() {
     api.get('/repositories').then(response => {
       setRepositories(response.data);
     })
-  }, [repositories]);
+  }, []);
 
   //ADICIONA UM REPOSITORIO ESTATICO
   async function handleAddRepository() {
@@ -26,29 +27,31 @@ function App() {
   }
 
   async function handleRemoveRepository(id) {
-   const response = await api.delete(`/repositories/${id}`);
-   const newRepositories = response.data;
-   setRepositories([...repositories, newRepositories]);
+    await api.delete(`/repositories/${id}`);
+    const newRepositories = repositories.filter(repository => repository.id !== id);
+    setRepositories(newRepositories);
+    
 
   }
 
-  return (
+  return(
     <div>
       <ul data-testid="repository-list">
-        {repositories.map(repository => 
-          <li key={repository.id}>
+        
+        {repositories.map((repository, index) =>
+          <li key={index}>
           {repository.title}
           <button onClick={() => handleRemoveRepository(repository.id)}>
           Remover
           </button>
           </li>
         )}
-          
+        
       </ul>
 
       <button onClick={handleAddRepository}>Adicionar</button>
     </div>
-  );
+ );
 }
 
 export default App;
